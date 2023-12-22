@@ -1,6 +1,6 @@
 <?php
 
-namespace JobMetric\EnvModifier\Facades;
+namespace JobMetric\Setting\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
