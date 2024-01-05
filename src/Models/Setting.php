@@ -38,6 +38,11 @@ class Setting extends Model
         'updated_at' => 'datetime'
     ];
 
+    public function getTable()
+    {
+        return config('setting.tables.setting', parent::getTable());
+    }
+
     /**
      * Scope a query to only include settings of a given code.
      *
