@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property mixed is_json
  * @property mixed created_at
  * @property mixed updated_at
+ * @method static ofCode(string $code)
+ * @method static create(array $array)
  */
 class Setting extends Model
 {
