@@ -35,7 +35,7 @@ class Setting
     }
 
     /**
-     * store setting
+     * dispatch setting
      *
      * @param string $code
      * @param array $object
@@ -43,7 +43,7 @@ class Setting
      *
      * @return void
      */
-    public function store(string $code, array $object, bool $has_event = true): void
+    public function dispatch(string $code, array $object, bool $has_event = true): void
     {
         $this->forget($code, $has_event);
 

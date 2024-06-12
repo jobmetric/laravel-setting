@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @see \JobMetric\Setting\Setting
  *
- * @method static void store(string $code, array $object, bool $has_event = true)
+ * @method static void dispatch(string $code, array $object, bool $has_event = true)
  * @method static void forget(string $code, bool $has_event = true)
  * @method static void setAll(mixed $data)
  * @method static void set(string $string, mixed $item)
@@ -26,6 +26,6 @@ class Setting extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        return 'Setting';
+        return \JobMetric\Setting\Setting::class;
     }
 }
