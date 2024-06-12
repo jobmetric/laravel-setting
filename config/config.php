@@ -15,7 +15,7 @@ return [
     | - unit: minutes
     */
 
-    "cache_time" => env("SETTING_CACHE_TIME", 0),
+    "cache_time" => env("SETTING_CACHE_TIME"), // set "null" for forever time
 
     /*
     |--------------------------------------------------------------------------
