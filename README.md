@@ -1,3 +1,20 @@
+[contributors-shield]: https://img.shields.io/github/contributors/jobmetric/laravel-setting.svg?style=for-the-badge
+[contributors-url]: https://github.com/jobmetric/laravel-setting/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/jobmetric/laravel-setting.svg?style=for-the-badge&label=Fork
+[forks-url]: https://github.com/jobmetric/laravel-setting/network/members
+[stars-shield]: https://img.shields.io/github/stars/jobmetric/laravel-setting.svg?style=for-the-badge
+[stars-url]: https://github.com/jobmetric/laravel-setting/stargazers
+[license-shield]: https://img.shields.io/github/license/jobmetric/laravel-setting.svg?style=for-the-badge
+[license-url]: https://github.com/jobmetric/laravel-setting/blob/master/LICENCE.md
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-blue.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://linkedin.com/in/majidmohammadian
+
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+
 # Setting for laravel
 
 This is a package for a dynamic setting across different Laravel projects.
@@ -156,4 +173,4 @@ $has = hasSetting('config_name');
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/jobmetric/laravel-setting/blob/master/README.md) for more information.
