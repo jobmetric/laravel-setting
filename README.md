@@ -173,4 +173,4 @@ $has = hasSetting('config_name');
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/jobmetric/laravel-setting/blob/master/README.md) for more information.
+The MIT License (MIT). Please see [License File](https://github.com/jobmetric/laravel-setting/blob/master/LICENCE.md) for more information.
