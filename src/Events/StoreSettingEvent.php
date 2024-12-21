@@ -4,17 +4,17 @@ namespace JobMetric\Setting\Events;
 
 class StoreSettingEvent
 {
-    public string $code;
+    public string $form;
 
     /**
      * Create a new event instance.
      *
-     * @param string $code
+     * @param string $form
      *
      * @return void
      */
-    public function __construct(string $code)
+    public function __construct(string $form)
     {
-        $this->code = $code;
+        $this->form = $form;
     }
 }

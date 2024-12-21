@@ -2,6 +2,7 @@
 
 namespace JobMetric\Setting\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,14 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * JobMetric\Setting\Models\Setting
  *
- * @property mixed id
- * @property mixed code
- * @property mixed key
- * @property mixed value
- * @property mixed is_json
- * @property mixed created_at
- * @property mixed updated_at
- * @method static ofCode(string $code)
+ * @property int $id
+ * @property string $form
+ * @property string $key
+ * @property mixed $value
+ * @property bool $is_json
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ *
+ * @method static ofForm(string $form)
  * @method static create(array $array)
  */
 class Setting extends Model
@@ -24,7 +26,7 @@ class Setting extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code',
+        'form',
         'key',
         'value',
         'is_json'
@@ -46,15 +48,15 @@ class Setting extends Model
     }
 
     /**
-     * Scope a query to only include settings of a given code.
+     * Scope a query to only include settings of a given form.
      *
      * @param Builder $query
-     * @param string $code
+     * @param string $form
      *
      * @return Builder
      */
-    public function scopeOfCode(Builder $query, string $code): Builder
+    public function scopeOfForm(Builder $query, string $form): Builder
     {
-        return $query->where('code', $code);
+        return $query->where('form', $form);
     }
 }

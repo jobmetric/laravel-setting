@@ -15,15 +15,13 @@ return new class extends Migration {
         Schema::create(config('setting.tables.setting'), function (Blueprint $table) {
             $table->id();
 
-            $table->string('code')->index();
+            $table->string('form')->index();
             $table->string('key')->index();
             $table->text('value')->nullable()->default(null);
             $table->boolean('is_json')->default(false)->comment('If the array was in the value field -> is_json = true');
 
             $table->timestamps();
         });
-
-        cache()->forget('setting');
     }
 
     /**

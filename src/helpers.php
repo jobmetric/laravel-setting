@@ -6,15 +6,15 @@ if (!function_exists('dispatchSetting')) {
     /**
      * dispatch setting
      *
-     * @param string $code
+     * @param string $form
      * @param array $object
      * @param bool $has_event
      *
      * @return void
      */
-    function dispatchSetting(string $code, array $object, bool $has_event = true): void
+    function dispatchSetting(string $form, array $object, bool $has_event = true): void
     {
-        Setting::dispatch($code, $object, $has_event);
+        Setting::dispatch($form, $object, $has_event);
     }
 }
 
@@ -22,14 +22,14 @@ if (!function_exists('forgetSetting')) {
     /**
      * forget setting
      *
-     * @param string $code
+     * @param string $form
      * @param bool $has_event
      *
      * @return void
      */
-    function forgetSetting(string $code, bool $has_event = true): void
+    function forgetSetting(string $form, bool $has_event = true): void
     {
-        Setting::forget($code, $has_event);
+        Setting::forget($form, $has_event);
     }
 }
 
@@ -48,17 +48,17 @@ if (!function_exists('getSetting')) {
     }
 }
 
-if (!function_exists('codeSetting')) {
+if (!function_exists('formSetting')) {
     /**
-     * code setting
+     * form setting
      *
-     * @param string $code
+     * @param string $form
      *
      * @return array
      */
-    function codeSetting(string $code): array
+    function formSetting(string $form): array
     {
-        return Setting::code($code);
+        return Setting::form($form);
     }
 }
 

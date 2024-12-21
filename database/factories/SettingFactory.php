@@ -20,7 +20,7 @@ class SettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => $this->faker->word,
+            'form' => $this->faker->word,
             'key' => $this->faker->word,
             'value' => $this->faker->word,
             'is_json' => false,
@@ -28,16 +28,16 @@ class SettingFactory extends Factory
     }
 
     /**
-     * set code
+     * set form
      *
-     * @param string $code
+     * @param string $form
      *
      * @return static
      */
-    public function setCode(string $code): static
+    public function setCode(string $form): static
     {
         return $this->state(fn(array $attributes) => [
-            'code' => $code
+            'form' => $form
         ]);
     }
 

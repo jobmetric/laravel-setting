@@ -2,7 +2,6 @@
 
 namespace JobMetric\Setting;
 
-use Illuminate\Contracts\Foundation\Application;
 use JobMetric\Setting\Events\ForgetSettingEvent;
 use JobMetric\Setting\Events\StoreSettingEvent;
 use JobMetric\Setting\Facades\Setting as SettingFacade;
@@ -11,13 +10,6 @@ use JobMetric\Setting\Models\Setting as SettingModel;
 class Setting
 {
     /**
-     * The application instance.
-     *
-     * @var Application
-     */
-    protected Application $app;
-
-    /**
      * The setting data.
      *
      * @var array
@@ -25,68 +17,56 @@ class Setting
     private array $data = [];
 
     /**
-     * Create a new Setting instance.
-     *
-     * @param Application $app
-     */
-    public function __construct(Application $app)
-    {
-        $this->app = $app;
-    }
-
-    /**
      * dispatch setting
      *
-     * @param string $code
+     * @param string $form
      * @param array $object
      * @param bool $has_event
      *
      * @return void
      */
-    public function dispatch(string $code, array $object, bool $has_event = true): void
+    public function dispatch(string $form, array $object, bool $has_event = true): void
     {
-        $this->forget($code, $has_event);
+        $this->forget($form, $has_event);
 
         foreach ($object as $index => $item) {
-            if (str_starts_with($index, $code)) {
-                $key = substr($index, (strlen($code) + 1), (strlen($index) - (strlen($code) + 1)));
+            if (str_starts_with($index, $form)) {
+                $key = substr($index, (strlen($form) + 1), (strlen($index) - (strlen($form) + 1)));
 
                 SettingModel::create([
-                    'code' => $code,
+                    'form' => $form,
                     'key' => $key,
                     'value' => is_array($item) ? json_encode($item, JSON_UNESCAPED_UNICODE) : $item,
                     'is_json' => is_array($item),
                 ]);
 
-                SettingFacade::set($code . '_' . $key, $item);
+                SettingFacade::set($form . '_' . $key, $item);
             }
         }
 
         if ($has_event) {
-            event(new StoreSettingEvent($code));
+            event(new StoreSettingEvent($form));
         }
-
-        cache()->forget('setting');
     }
 
     /**
      * forget setting
      *
-     * @param string $code
+     * @param string $form
      * @param bool $has_event
      *
      * @return void
      */
-    public function forget(string $code, bool $has_event = true): void
+    public function forget(string $form, bool $has_event = true): void
     {
-        SettingModel::ofCode($code)->get()->each(function ($item) {
-            SettingFacade::unset($item->code . '_' . $item->key);
+        SettingModel::ofForm($form)->get()->each(function ($item) {
+            SettingFacade::unset($item->form . '_' . $item->key);
 
             $item->delete();
         });
 
         if ($has_event) {
-            event(new ForgetSettingEvent($code));
+            event(new ForgetSettingEvent($form));
         }
 
         cache()->forget('setting');
@@ -95,11 +75,11 @@ class Setting
     /**
      * set all settings
      *
-     * @param mixed $value
+     * @param array $value
      *
      * @return void
      */
-    public function setAll(mixed $value): void
+    public function setAll(array $value): void
     {
         $this->data = $value;
     }
@@ -131,17 +111,17 @@ class Setting
     }
 
     /**
-     * get code setting
+     * get form setting
      *
-     * @param string $code
+     * @param string $form
      *
      * @return array
      */
-    public function code(string $code): array
+    public function form(string $form): array
     {
         $setting = [];
         foreach ($this->data as $key => $value) {
-            if (str_starts_with($key, $code)) {
+            if (str_starts_with($key, $form)) {
                 $setting[$key] = $this->data[$key];
             }
         }
