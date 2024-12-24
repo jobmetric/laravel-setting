@@ -22,7 +22,9 @@
     "require": {
         "php": ">=8.0.1",
         "laravel/framework": ">=9.19",
-        "jobmetric/laravel-package-core": "^1.0"
+        "jobmetric/laravel-package-core": "^1.18.6",
+        "jobmetric/panelio": "^1.15.3",
+        "jobmetric/laravel-form": "^1.0"
     },
     "autoload": {
         "files": [
