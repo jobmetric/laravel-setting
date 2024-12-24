@@ -3,11 +3,14 @@
 namespace JobMetric\Setting;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use JobMetric\PackageCore\Exceptions\MigrationFolderNotFoundException;
 use JobMetric\PackageCore\Exceptions\RegisterClassTypeNotFoundException;
+use JobMetric\PackageCore\Exceptions\ViewFolderNotFoundException;
 use JobMetric\PackageCore\PackageCore;
 use JobMetric\PackageCore\PackageCoreServiceProvider;
+use JobMetric\Setting\Facades\Setting as SettingFacade;
 use JobMetric\Setting\Models\Setting as SettingModel;
 
 class SettingServiceProvider extends PackageCoreServiceProvider
@@ -18,14 +21,29 @@ class SettingServiceProvider extends PackageCoreServiceProvider
      * @return void
      * @throws MigrationFolderNotFoundException
      * @throws RegisterClassTypeNotFoundException
+     * @throws ViewFolderNotFoundException
      */
     public function configuration(PackageCore $package): void
     {
         $package->name('laravel-setting')
             ->hasConfig()
             ->hasMigration()
+            ->hasTranslation()
+            ->hasRoute()
+            ->hasView()
             ->registerClass('Setting', Setting::class)
             ->registerClass('SettingType', SettingType::class);
+    }
+
+    /**
+     * After register package
+     *
+     * @return void
+     */
+    public function afterRegisterPackage(): void
+    {
+        // Register model binding
+        Route::model('jm_setting', SettingModel::class);
     }
 
     /**
@@ -48,6 +66,6 @@ class SettingServiceProvider extends PackageCoreServiceProvider
             return $data;
         });
 
-        app(Setting::class)->setAll($settings);
+        SettingFacade::setAll($settings);
     }
 }
