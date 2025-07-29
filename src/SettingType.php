@@ -3,22 +3,18 @@
 namespace JobMetric\Setting;
 
 use Illuminate\Support\Traits\Macroable;
-use JobMetric\Form\FormServiceType;
-use JobMetric\PackageCore\Services\BaseServiceType;
-use JobMetric\PackageCore\Services\InformationServiceType;
-use JobMetric\PackageCore\Services\ListShowDescriptionServiceType;
-use JobMetric\PackageCore\Services\ServiceType;
+use JobMetric\Form\Typeify\HasFormType;
+use JobMetric\Typeify\BaseType;
+use JobMetric\Typeify\Traits\List\ShowDescriptionInListType;
 
-class SettingType extends ServiceType
+class SettingType extends BaseType
 {
     use Macroable,
-        BaseServiceType,
-        FormServiceType,
-        InformationServiceType,
-        ListShowDescriptionServiceType;
+        HasFormType,
+        ShowDescriptionInListType;
 
-    protected function serviceType(): string
+    protected function typeName(): string
     {
-        return 'settingType';
+        return 'setting-type';
     }
 }

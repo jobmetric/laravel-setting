@@ -5,6 +5,7 @@ namespace JobMetric\Setting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
+use JobMetric\PackageCore\Enums\RegisterClassTypeEnum;
 use JobMetric\PackageCore\Exceptions\MigrationFolderNotFoundException;
 use JobMetric\PackageCore\Exceptions\RegisterClassTypeNotFoundException;
 use JobMetric\PackageCore\Exceptions\ViewFolderNotFoundException;
@@ -32,7 +33,7 @@ class SettingServiceProvider extends PackageCoreServiceProvider
             ->hasRoute()
             ->hasView()
             ->registerClass('Setting', Setting::class)
-            ->registerClass('SettingType', SettingType::class);
+            ->registerClass('SettingType', SettingType::class, RegisterClassTypeEnum::SINGLETON());
     }
 
     /**

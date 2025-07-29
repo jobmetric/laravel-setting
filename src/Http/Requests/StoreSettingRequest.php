@@ -40,7 +40,7 @@ class StoreSettingRequest extends FormRequest
         $rules = [];
 
         // check type
-        SettingType::checkType($type);
+        SettingType::ensureTypeExists($type);
 
         $settingType = SettingType::type($type);
 
@@ -78,7 +78,7 @@ class StoreSettingRequest extends FormRequest
         $type = $parameters['type'] ?? null;
 
         // check type
-        SettingType::checkType($type);
+        SettingType::ensureTypeExists($type);
 
         $settingType = SettingType::type($type);
 

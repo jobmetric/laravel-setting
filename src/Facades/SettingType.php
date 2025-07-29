@@ -5,13 +5,14 @@ namespace JobMetric\Setting\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \JobMetric\Setting\SettingType
+ * @mixin \JobMetric\Setting\SettingType
  *
  * @method static \JobMetric\Setting\SettingType define(string $type)
  * @method static \JobMetric\Setting\SettingType type(string $type)
+ * @method static array get()
  * @method static array getTypes()
  * @method static bool hasType(string $type)
- * @method static void checkType(string|null $type)
+ * @method static void ensureTypeExists(string $type)
  */
 class SettingType extends Facade
 {
@@ -22,6 +23,6 @@ class SettingType extends Facade
      */
     protected static function getFacadeAccessor(): string
     {
-        return \JobMetric\Setting\SettingType::class;
+        return 'SettingType';
     }
 }
