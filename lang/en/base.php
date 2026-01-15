@@ -16,4 +16,20 @@ return [
         "saved" => ":type created successfully.",
     ],
 
+    "entity_names" => [
+        "setting" => "Setting",
+    ],
+
+    'events' => [
+        'setting_store' => [
+            'title' => 'Setting Stored',
+            'description' => 'This event is triggered when setting is stored.',
+        ],
+
+        'setting_forget' => [
+            'title' => 'Metadata Forget',
+            'description' => 'This event is triggered when setting is forget.',
+        ],
+    ],
+
 ];
