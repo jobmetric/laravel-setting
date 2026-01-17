@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * JobMetric\Setting\Models\Setting
+ * @package JobMetric\Setting
  *
  * @property int $id
  * @property string $form
@@ -38,6 +38,10 @@ class Setting extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'form' => 'string',
+        'key' => 'string',
+        'value' => 'array|string|null',
+        'is_json' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
