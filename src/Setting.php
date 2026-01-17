@@ -2,6 +2,8 @@
 
 namespace JobMetric\Setting;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use JobMetric\Setting\Events\ForgetSettingEvent;
 use JobMetric\Setting\Events\StoreSettingEvent;
 use JobMetric\Setting\Facades\Setting as SettingFacade;
@@ -10,14 +12,7 @@ use JobMetric\Setting\Models\Setting as SettingModel;
 class Setting
 {
     /**
-     * The setting data.
-     *
-     * @var array
-     */
-    private array $data = [];
-
-    /**
-     * dispatch setting
+     * Dispatch setting
      *
      * @param string $form
      * @param array $object
@@ -34,23 +29,23 @@ class Setting
                 $key = substr($index, (strlen($form) + 1), (strlen($index) - (strlen($form) + 1)));
 
                 SettingModel::create([
-                    'form' => $form,
-                    'key' => $key,
-                    'value' => is_array($item) ? json_encode($item, JSON_UNESCAPED_UNICODE) : $item,
+                    'form'    => $form,
+                    'key'     => $key,
+                    'value'   => is_array($item) ? json_encode($item, JSON_UNESCAPED_UNICODE) : $item,
                     'is_json' => is_array($item),
                 ]);
-
-                SettingFacade::set($form . '_' . $key, $item);
             }
         }
 
         if ($has_event) {
             event(new StoreSettingEvent($form));
         }
+
+        $this->buildCache();
     }
 
     /**
-     * forget setting
+     * Forget setting
      *
      * @param string $form
      * @param bool $has_event
@@ -69,36 +64,11 @@ class Setting
             event(new ForgetSettingEvent($form));
         }
 
-        cache()->forget('setting');
+        cache()->forget(config('setting.cache_key'));
     }
 
     /**
-     * set all settings
-     *
-     * @param array $value
-     *
-     * @return void
-     */
-    public function setAll(array $value): void
-    {
-        $this->data = $value;
-    }
-
-    /**
-     * set setting
-     *
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return void
-     */
-    public function set(string $key, mixed $value): void
-    {
-        $this->data[$key] = $value;
-    }
-
-    /**
-     * get setting
+     * Get setting
      *
      * @param string $key
      * @param mixed $default
@@ -107,11 +77,11 @@ class Setting
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        return (isset($this->data[$key])) ? $this->data[$key] : $default;
+        return $this->all()[$key] ?? $default;
     }
 
     /**
-     * get form setting
+     * Get form setting
      *
      * @param string $form
      *
@@ -119,18 +89,13 @@ class Setting
      */
     public function form(string $form): array
     {
-        $setting = [];
-        foreach ($this->data as $key => $value) {
-            if (str_starts_with($key, $form)) {
-                $setting[$key] = $this->data[$key];
-            }
-        }
-
-        return $setting;
+        return array_filter($this->all(), function ($key) use ($form) {
+            return str_starts_with($key, $form);
+        }, ARRAY_FILTER_USE_KEY);
     }
 
     /**
-     * has setting
+     * Has setting key
      *
      * @param string $key
      *
@@ -138,30 +103,41 @@ class Setting
      */
     public function has(string $key): bool
     {
-        return isset($this->data[$key]);
+        return isset($this->all()[$key]);
     }
 
     /**
-     * unset setting
-     *
-     * @param string $key
-     *
-     * @return void
-     */
-    public function unset(string $key): void
-    {
-        if ($this->has($key)) {
-            unset($this->data[$key]);
-        }
-    }
-
-    /**
-     * get all settings
+     * Get all setting keys
      *
      * @return array
      */
     public function all(): array
     {
-        return $this->data;
+        if (! Cache::has(config('setting.cache_key'))) {
+            $this->buildCache();
+        }
+
+        return Cache::get(config('setting.cache_key'));
+    }
+
+    /**
+     * Build setting cache
+     *
+     * @return void
+     */
+    private function buildCache(): void
+    {
+        Cache::remember(config('setting.cache_key'), config('setting.cache_time'), function () {
+            $data = [];
+            if (Schema::hasTable(config('setting.tables.setting'))) {
+                $results = SettingModel::all();
+
+                foreach ($results as $setting) {
+                    $data[$setting->form . '_' . $setting->key] = ($setting->is_json) ? json_decode($setting->value, true) : $setting->value;
+                }
+            }
+
+            return $data;
+        });
     }
 }
