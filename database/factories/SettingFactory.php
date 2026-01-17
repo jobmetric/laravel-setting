@@ -20,9 +20,9 @@ class SettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'form' => $this->faker->word,
-            'key' => $this->faker->word,
-            'value' => $this->faker->word,
+            'form'    => $this->faker->word,
+            'key'     => $this->faker->word,
+            'value'   => $this->faker->word,
             'is_json' => false,
         ];
     }
@@ -34,10 +34,10 @@ class SettingFactory extends Factory
      *
      * @return static
      */
-    public function setCode(string $form): static
+    public function setForm(string $form): static
     {
-        return $this->state(fn(array $attributes) => [
-            'form' => $form
+        return $this->state(fn (array $attributes) => [
+            'form' => $form,
         ]);
     }
 
@@ -50,36 +50,23 @@ class SettingFactory extends Factory
      */
     public function setKey(string $key): static
     {
-        return $this->state(fn(array $attributes) => [
-            'key' => $key
+        return $this->state(fn (array $attributes) => [
+            'key' => $key,
         ]);
     }
 
     /**
      * set value
      *
-     * @param string $value
+     * @param string|array|null $value
      *
      * @return static
      */
-    public function setValue(string $value): static
+    public function setValue(string|array|null $value): static
     {
-        return $this->state(fn(array $attributes) => [
-            'value' => $value
-        ]);
-    }
-
-    /**
-     * set is json
-     *
-     * @param bool $is
-     *
-     * @return static
-     */
-    public function setIsJson(bool $is): static
-    {
-        return $this->state(fn(array $attributes) => [
-            'is_json' => $is
+        return $this->state(fn (array $attributes) => [
+            'value'   => is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value,
+            'is_json' => is_array($value),
         ]);
     }
 }

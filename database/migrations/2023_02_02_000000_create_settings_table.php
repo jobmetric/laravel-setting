@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -18,7 +19,9 @@ return new class extends Migration {
             $table->string('form')->index();
             $table->string('key')->index();
             $table->text('value')->nullable()->default(null);
-            $table->boolean('is_json')->default(false)->comment('If the array was in the value field -> is_json = true');
+            $table->boolean('is_json')
+                ->default(false)
+                ->comment('If the array was in the value field -> is_json = true');
 
             $table->timestamps();
         });
