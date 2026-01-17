@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Schema;
 use JobMetric\PackageCore\Enums\RegisterClassTypeEnum;
 use JobMetric\PackageCore\Exceptions\MigrationFolderNotFoundException;
 use JobMetric\PackageCore\Exceptions\RegisterClassTypeNotFoundException;
-use JobMetric\PackageCore\Exceptions\ViewFolderNotFoundException;
 use JobMetric\PackageCore\PackageCore;
 use JobMetric\PackageCore\PackageCoreServiceProvider;
 use JobMetric\Setting\Facades\Setting as SettingFacade;
@@ -22,7 +21,6 @@ class SettingServiceProvider extends PackageCoreServiceProvider
      * @return void
      * @throws MigrationFolderNotFoundException
      * @throws RegisterClassTypeNotFoundException
-     * @throws ViewFolderNotFoundException
      */
     public function configuration(PackageCore $package): void
     {
@@ -30,8 +28,6 @@ class SettingServiceProvider extends PackageCoreServiceProvider
             ->hasConfig()
             ->hasMigration()
             ->hasTranslation()
-            ->hasRoute()
-            ->hasView()
             ->registerClass('Setting', Setting::class)
             ->registerClass('SettingType', SettingType::class, RegisterClassTypeEnum::SINGLETON());
     }
