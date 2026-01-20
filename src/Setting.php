@@ -9,14 +9,37 @@ use JobMetric\Setting\Events\StoreSettingEvent;
 use JobMetric\Setting\Facades\Setting as SettingFacade;
 use JobMetric\Setting\Models\Setting as SettingModel;
 
+/**
+ * Class Setting
+ *
+ * Service class for managing application settings.
+ * Responsibilities:
+ * - Store and retrieve settings from database with caching
+ * - Manage settings grouped by form (namespace)
+ * - Handle JSON serialization/deserialization for complex values
+ * - Fire domain events for setting changes
+ * - Maintain cache invalidation on mutations
+ */
 class Setting
 {
     /**
-     * Dispatch setting
+     * Store or update settings for a specific form (namespace).
      *
-     * @param string $form
-     * @param array $object
-     * @param bool $has_event
+     * Role: persists settings data to database, clears old form data, and rebuilds cache.
+     *
+     * Process:
+     * 1. Removes all existing settings for the given form
+     * 2. Iterates through provided object array, filtering keys that start with form prefix
+     * 3. Extracts key by removing form prefix (format: "form_key" -> extracts "key")
+     * 4. Stores each setting with automatic JSON encoding for array values
+     * 5. Fires StoreSettingEvent if enabled
+     * 6. Rebuilds the entire settings cache
+     *
+     * @param string $form    The form/namespace identifier (e.g., 'general', 'email')
+     * @param array $object   Associative array of setting keys and values.
+     *                        Keys must start with $form prefix (e.g., 'general_site_name').
+     *                        Array values are automatically JSON-encoded.
+     * @param bool $has_event Whether to fire StoreSettingEvent after storing (default: true)
      *
      * @return void
      */
@@ -45,10 +68,19 @@ class Setting
     }
 
     /**
-     * Forget setting
+     * Remove all settings for a specific form from database and cache.
      *
-     * @param string $form
-     * @param bool $has_event
+     * Role: clean up settings data for a form namespace and invalidate cache.
+     *
+     * Process:
+     * 1. Retrieves all settings matching the form
+     * 2. Unsets each setting from facade cache
+     * 3. Deletes each setting record from database
+     * 4. Fires ForgetSettingEvent if enabled
+     * 5. Clears the main settings cache key
+     *
+     * @param string $form    The form/namespace identifier to remove
+     * @param bool $has_event Whether to fire ForgetSettingEvent after removal (default: true)
      *
      * @return void
      */
@@ -68,12 +100,18 @@ class Setting
     }
 
     /**
-     * Get setting
+     * Retrieve a single setting value by key.
      *
-     * @param string $key
-     * @param mixed $default
+     * Role: provides convenient access to individual settings with default fallback.
      *
-     * @return mixed
+     * The key format should match the stored format: "form_key" (e.g., 'general_site_name').
+     * If the key doesn't exist, returns the provided default value.
+     * JSON-encoded values are automatically decoded when retrieved.
+     *
+     * @param string $key    The setting key in format "form_key"
+     * @param mixed $default Default value to return if key doesn't exist (default: null)
+     *
+     * @return mixed The setting value, or default if not found
      */
     public function get(string $key, mixed $default = null): mixed
     {
@@ -81,11 +119,17 @@ class Setting
     }
 
     /**
-     * Get form setting
+     * Retrieve all settings that belong to a specific form (namespace).
      *
-     * @param string $form
+     * Role: filters all settings to return only those matching a form prefix.
      *
-     * @return array
+     * Returns an associative array of all settings where the key starts with
+     * the form prefix (e.g., 'general' returns all 'general_*' settings).
+     * JSON-encoded values are automatically decoded.
+     *
+     * @param string $form The form/namespace identifier to filter by
+     *
+     * @return array<string,mixed> Filtered array of settings for the form
      */
     public function form(string $form): array
     {
@@ -95,11 +139,13 @@ class Setting
     }
 
     /**
-     * Has setting key
+     * Check if a setting key exists in the cache.
      *
-     * @param string $key
+     * Role: provides a boolean check for setting existence without retrieving value.
      *
-     * @return bool
+     * @param string $key The setting key in format "form_key" to check
+     *
+     * @return bool True if the key exists, false otherwise
      */
     public function has(string $key): bool
     {
@@ -107,9 +153,15 @@ class Setting
     }
 
     /**
-     * Get all setting keys
+     * Retrieve all settings from cache, building cache if needed.
      *
-     * @return array
+     * Role: provides access to the complete settings collection with lazy cache building.
+     *
+     * Returns an associative array where keys are in format "form_key" and values
+     * are the setting values (JSON arrays/objects are automatically decoded).
+     * If cache doesn't exist, automatically triggers buildCache() to populate it.
+     *
+     * @return array<string,mixed> All settings keyed by "form_key" format
      */
     public function all(): array
     {
@@ -121,7 +173,19 @@ class Setting
     }
 
     /**
-     * Build setting cache
+     * Build and cache all settings from database.
+     *
+     * Role: populates the settings cache with data from database, handling JSON decoding.
+     *
+     * Process:
+     * 1. Checks if settings table exists (handles cases where migrations haven't run)
+     * 2. Retrieves all settings from database
+     * 3. Builds associative array with keys in format "form_key"
+     * 4. Automatically decodes JSON values (when is_json flag is true) to arrays/objects
+     * 5. Stores in cache with TTL from config('setting.cache_time')
+     *
+     * Cache key and TTL are configured via 'setting.cache_key' and 'setting.cache_time' config values.
+     * This method is called automatically when cache is missing or after mutations.
      *
      * @return void
      */
