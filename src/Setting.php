@@ -83,15 +83,6 @@ class Setting
     /**
      * Remove all settings for a specific form from database and cache.
      *
-     * Role: clean up settings data for a form namespace and invalidate cache.
-     *
-     * Process:
-     * 1. Retrieves all settings matching the form
-     * 2. Unsets each setting from facade cache
-     * 3. Deletes each setting record from database
-     * 4. Fires ForgetSettingEvent if enabled
-     * 5. Clears the main settings cache key
-     *
      * @param string $form    The form/namespace identifier to remove
      * @param bool $has_event Whether to fire ForgetSettingEvent after removal (default: true)
      *
@@ -99,11 +90,18 @@ class Setting
      */
     public function forget(string $form, bool $has_event = true): void
     {
-        SettingModel::ofForm($form)->get()->each(function ($item) {
-            SettingFacade::unset($item->form . '_' . $item->key);
+        // Get settings for cache unset (only select needed columns for performance)
+        $settings = SettingModel::ofForm($form)->select(['form', 'key'])->get();
 
-            $item->delete();
-        });
+        // Unset from facade cache (in-memory operation, no database query)
+        foreach ($settings as $setting) {
+            SettingFacade::unset($setting->form . '_' . $setting->key);
+        }
+
+        // Bulk delete for better performance (single query instead of N queries)
+        if ($settings->isNotEmpty()) {
+            SettingModel::ofForm($form)->delete();
+        }
 
         if ($has_event) {
             event(new ForgetSettingEvent($form));
