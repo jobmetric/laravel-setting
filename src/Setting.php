@@ -25,16 +25,6 @@ class Setting
     /**
      * Store or update settings for a specific form (namespace).
      *
-     * Role: persists settings data to database, clears old form data, and rebuilds cache.
-     *
-     * Process:
-     * 1. Removes all existing settings for the given form
-     * 2. Iterates through provided object array, filtering keys that start with form prefix
-     * 3. Extracts key by removing form prefix (format: "form_key" -> extracts "key")
-     * 4. Stores each setting with automatic JSON encoding for array values
-     * 5. Fires StoreSettingEvent if enabled
-     * 6. Rebuilds the entire settings cache
-     *
      * @param string $form    The form/namespace identifier (e.g., 'general', 'email')
      * @param array $object   Associative array of setting keys and values.
      *                        Keys must start with $form prefix (e.g., 'general_site_name').
@@ -47,17 +37,40 @@ class Setting
     {
         $this->forget($form, $has_event);
 
-        foreach ($object as $index => $item) {
-            if (str_starts_with($index, $form)) {
-                $key = substr($index, (strlen($form) + 1), (strlen($index) - (strlen($form) + 1)));
+        // Prepare batch insert data
+        $batchData = [];
+        $formPrefix = $form . '_';
+        $formPrefixLength = strlen($formPrefix);
+        $now = now();
 
-                SettingModel::create([
-                    'form'    => $form,
-                    'key'     => $key,
-                    'value'   => is_array($item) ? json_encode($item, JSON_UNESCAPED_UNICODE) : $item,
-                    'is_json' => is_array($item),
-                ]);
+        foreach ($object as $index => $item) {
+            if (str_starts_with($index, $formPrefix)) {
+                // Extract key by removing form prefix
+                $key = substr($index, $formPrefixLength);
+
+                // Skip empty keys
+                if (empty($key)) {
+                    continue;
+                }
+
+                // Prepare value and determine if it's JSON
+                $isArray = is_array($item);
+                $value = $isArray ? json_encode($item, JSON_UNESCAPED_UNICODE) : $item;
+
+                $batchData[] = [
+                    'form'       => $form,
+                    'key'        => $key,
+                    'value'      => $value,
+                    'is_json'    => $isArray,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
             }
+        }
+
+        // Bulk insert if we have data
+        if (! empty($batchData)) {
+            SettingModel::insert($batchData);
         }
 
         if ($has_event) {
