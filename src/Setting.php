@@ -190,13 +190,15 @@ class Setting
      *
      * Process:
      * 1. Checks if settings table exists (handles cases where migrations haven't run)
-     * 2. Retrieves all settings from database
+     * 2. Retrieves only needed columns from database (form, key, value, is_json)
      * 3. Builds associative array with keys in format "form_key"
      * 4. Automatically decodes JSON values (when is_json flag is true) to arrays/objects
      * 5. Stores in cache with TTL from config('setting.cache_time')
      *
      * Cache key and TTL are configured via 'setting.cache_key' and 'setting.cache_time' config values.
      * This method is called automatically when cache is missing or after mutations.
+     *
+     * Performance: Uses select() to fetch only needed columns instead of all(), reducing memory usage.
      *
      * @return void
      */
@@ -205,7 +207,8 @@ class Setting
         Cache::remember(config('setting.cache_key'), config('setting.cache_time'), function () {
             $data = [];
             if (Schema::hasTable(config('setting.tables.setting'))) {
-                $results = SettingModel::all();
+                // Select only needed columns for better performance
+                $results = SettingModel::select(['form', 'key', 'value', 'is_json'])->get();
 
                 foreach ($results as $setting) {
                     $data[$setting->form . '_' . $setting->key] = ($setting->is_json) ? json_decode($setting->value, true) : $setting->value;
