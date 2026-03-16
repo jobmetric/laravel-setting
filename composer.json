@@ -42,7 +42,8 @@
                 "JobMetric\\Setting\\SettingServiceProvider"
             ],
             "aliases": {
-                "Setting": "JobMetric\\Setting\\Facades\\Setting"
+                "Setting": "JobMetric\\Setting\\Facades\\Setting",
+                "SettingNamespaceRegistry": "JobMetric\\Setting\\Facades\\SettingNamespaceRegistry"
             }
         }
     },
