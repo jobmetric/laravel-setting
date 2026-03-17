@@ -20,6 +20,10 @@ return [
         "setting" => "تنظیمات",
     ],
 
+    "exceptions" => [
+        "setting_class_invalid" => "کلاس باید از :expected ارث‌بری کند، داده‌شده: :given.",
+    ],
+
     'events' => [
         'setting_store' => [
             'title' => 'ذخیره تنظیمات',

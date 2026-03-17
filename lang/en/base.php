@@ -20,6 +20,10 @@ return [
         "setting" => "Setting",
     ],
 
+    "exceptions" => [
+        "setting_class_invalid" => "Class must extend :expected, given: :given.",
+    ],
+
     'events' => [
         'setting_store' => [
             'title' => 'Setting Stored',
