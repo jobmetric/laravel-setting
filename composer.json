@@ -43,7 +43,8 @@
             ],
             "aliases": {
                 "Setting": "JobMetric\\Setting\\Facades\\Setting",
-                "SettingNamespaceRegistry": "JobMetric\\Setting\\Facades\\SettingNamespaceRegistry"
+                "SettingNamespaceRegistry": "JobMetric\\Setting\\Facades\\SettingNamespaceRegistry",
+                "SettingRegistry": "JobMetric\\Setting\\Facades\\SettingRegistry"
             }
         }
     },
