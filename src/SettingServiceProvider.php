@@ -2,7 +2,6 @@
 
 namespace JobMetric\Setting;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\App;
 use JobMetric\PackageCore\Enums\RegisterClassTypeEnum;
 use JobMetric\PackageCore\Exceptions\MigrationFolderNotFoundException;
@@ -10,6 +9,8 @@ use JobMetric\PackageCore\Exceptions\RegisterClassTypeNotFoundException;
 use JobMetric\PackageCore\PackageCore;
 use JobMetric\PackageCore\PackageCoreServiceProvider;
 use JobMetric\Setting\Facades\SettingNamespaceRegistry as FacadeSettingNamespaceRegistry;
+use JobMetric\Setting\Facades\SettingRegistry as FacadeSettingRegistry;
+use JobMetric\Setting\Services\Setting as SettingService;
 use JobMetric\Setting\Support\SettingNamespaceRegistry;
 use JobMetric\Setting\Support\SettingRegistry;
 
@@ -29,7 +30,7 @@ class SettingServiceProvider extends PackageCoreServiceProvider
             ->hasMigration()
             ->hasTranslation()
             ->registerCommand(Commands\SettingMake::class)
-            ->registerClass('Setting', Setting::class, RegisterClassTypeEnum::SINGLETON())
+            ->registerClass('Setting', SettingService::class, RegisterClassTypeEnum::SINGLETON())
             ->registerClass('SettingType', SettingType::class, RegisterClassTypeEnum::SINGLETON())
             ->registerClass('SettingNamespaceRegistry', SettingNamespaceRegistry::class, RegisterClassTypeEnum::SINGLETON())
             ->registerClass('SettingRegistry', SettingRegistry::class, RegisterClassTypeEnum::SINGLETON());
@@ -39,18 +40,14 @@ class SettingServiceProvider extends PackageCoreServiceProvider
      * After register package
      *
      * @return void
-     * @throws BindingResolutionException
      */
     public function afterRegisterPackage(): void
     {
         // register setting default namespace
         FacadeSettingNamespaceRegistry::register(appNamespace() . "Settings");
 
-        /** @var SettingRegistry $kernel */
-        $kernel = $this->app->make('SettingRegistry');
-
-        App::booting(function () use ($kernel) {
-            $kernel->discover();
+        App::booting(function () {
+            FacadeSettingRegistry::discover();
         });
     }
 }
