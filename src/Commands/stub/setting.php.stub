@@ -1,0 +1,64 @@
+<?php
+
+namespace {{namespace}};
+
+use JobMetric\Form\FormBuilder;
+use JobMetric\Setting\Contracts\AbstractSetting;
+
+/**
+ * Setting form: {{title}}.
+ *
+ * @package {{namespace}}
+ */
+class {{class}} extends AbstractSetting
+{
+    /**
+     * Application or product name. First part of the form key.
+     *
+     * @return string
+     */
+    public function application(): string
+    {
+        return '{{application}}';
+    }
+
+    /**
+     * Unique key for this setting form. Second part of the form key.
+     *
+     * @return string
+     */
+    public function key(): string
+    {
+        return '{{key}}';
+    }
+
+    /**
+     * Human-readable title for this form.
+     *
+     * @return string
+     */
+    public function title(): string
+    {
+        return '{{title}}';
+    }
+
+    /**
+     * Short description of this form.
+     *
+     * @return string
+     */
+    public function description(): string
+    {
+        return '{{description}}';
+    }
+
+    /**
+     * Build the form definition (fields) for this setting form.
+     *
+     * @return FormBuilder
+     */
+    public function form(): FormBuilder
+    {
+        return new FormBuilder();
+    }
+}

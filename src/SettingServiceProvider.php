@@ -28,6 +28,7 @@ class SettingServiceProvider extends PackageCoreServiceProvider
             ->hasConfig()
             ->hasMigration()
             ->hasTranslation()
+            ->registerCommand(Commands\SettingMake::class)
             ->registerClass('Setting', Setting::class, RegisterClassTypeEnum::SINGLETON())
             ->registerClass('SettingType', SettingType::class, RegisterClassTypeEnum::SINGLETON())
             ->registerClass('SettingNamespaceRegistry', SettingNamespaceRegistry::class, RegisterClassTypeEnum::SINGLETON())
