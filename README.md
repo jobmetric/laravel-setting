@@ -15,7 +15,7 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-# Setting for laravel
+## Setting for laravel
 
 This is a package for a dynamic setting across different Laravel projects.
 
