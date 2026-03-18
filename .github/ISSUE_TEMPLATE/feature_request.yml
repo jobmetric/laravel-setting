@@ -1,0 +1,43 @@
+name: Feature Request
+description: Suggest a new feature for Laravel Setting
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide the following details to help us understand your request.
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you want to add.
+      placeholder: Add support for setting validation rules and types
+    validations:
+      required: true
+  - type: textarea
+    id: problem-need
+    attributes:
+      label: Problem/Need
+      description: What problem does this feature solve or what need does it address?
+      placeholder: This feature would help validate setting values before storing them
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How do you think this feature should work?
+      placeholder: |
+        Add validation rules in setting configuration
+        Example usage:
+        SettingFacade::dispatch('config', [
+            'config_name' => 'job metric',
+        ], [
+            'validation' => [
+                'config_name' => 'required|string|max:255',
+            ],
+        ]);
+    validations:
+      required: true
+
