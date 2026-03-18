@@ -1,0 +1,19 @@
+{
+    "runner": {
+        "enabled": true
+    },
+    "dependency-packages": [
+        "jobmetric/laravel-package-core",
+        "jobmetric/typeify",
+        "jobmetric/laravel-form",
+        "jobmetric/laravel-event-system"
+    ],
+    "namespace": {
+        "path": "tests",
+        "option": [
+            "--testdox"
+        ],
+        "filter": null
+    }
+}
+
