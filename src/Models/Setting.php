@@ -29,7 +29,7 @@ class Setting extends Model
         'form',
         'key',
         'value',
-        'is_json'
+        'is_json',
     ];
 
     /**
@@ -38,12 +38,11 @@ class Setting extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'form' => 'string',
-        'key' => 'string',
-        'value' => 'array|string|null',
-        'is_json' => 'boolean',
+        'form'       => 'string',
+        'key'        => 'string',
+        'is_json'    => 'boolean',
         'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function getTable()

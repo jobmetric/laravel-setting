@@ -13,26 +13,26 @@ return [
     */
 
     "messages" => [
-        "saved" => ":type با موفقیت ذخیره شد.",
+        "saved" => ":type saved successfully.",
     ],
 
     "entity_names" => [
-        "setting" => "تنظیمات",
+        "setting" => "Setting",
     ],
 
     "exceptions" => [
-        "setting_class_invalid" => "کلاس باید از :expected ارث‌بری کند، داده‌شده: :given.",
+        "setting_class_invalid" => "Class must extend :expected, given: :given.",
     ],
 
     'events' => [
         'setting_store' => [
-            'title' => 'ذخیره تنظیمات',
-            'description' => 'هنگامی که تنظیمات ذخیره می‌شود، این رویداد فعال می‌شود.',
+            'title' => 'Store setting',
+            'description' => 'This event is fired when a setting is stored.',
         ],
 
         'setting_forget' => [
-            'title' => 'حذف تنظیمات',
-            'description' => 'هنگامی که تنظیمات حذف می‌شود، این رویداد فعال می‌شود.',
+            'title' => 'Forget setting',
+            'description' => 'This event is fired when a setting is forgotten.',
         ],
     ],
 

@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Schema;
 use JobMetric\Form\Http\Requests\FormBuilderRequest;
 use JobMetric\Setting\Contracts\AbstractSetting;
 use JobMetric\Setting\Events\ForgetSettingEvent;
-use JobMetric\Setting\Exceptions\SettingClassInvalidException;
 use JobMetric\Setting\Events\StoreSettingEvent;
+use JobMetric\Setting\Exceptions\SettingClassInvalidException;
 use JobMetric\Setting\Models\Setting as SettingModel;
 use Throwable;
 
@@ -252,7 +252,7 @@ class Setting
             $this->buildCache();
         }
 
-        return Cache::get(config('setting.cache_key'));
+        return Cache::get(config('setting.cache_key')) ?? [];
     }
 
     /**
