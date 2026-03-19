@@ -5,7 +5,6 @@ namespace JobMetric\Setting\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use JobMetric\Form\Http\Requests\FormTypeObjectRequest;
-use JobMetric\Setting\Facades\SettingType;
 use Throwable;
 
 class StoreSettingRequest extends FormRequest
@@ -34,19 +33,8 @@ class StoreSettingRequest extends FormRequest
             $this->data = request()->all();
         }
 
-        $parameters = request()->route()->parameters();
-        $type = $parameters['type'] ?? null;
-
-        $rules = [];
-
-        // check type
-        SettingType::ensureTypeExists($type);
-
-        $settingType = SettingType::type($type);
-
-        $this->renderFormFiled($rules, $settingType->getForm());
-
-        return $rules;
+        // SettingType was removed; keep this request class available but without type-based rules.
+        return [];
     }
 
     /**
@@ -74,18 +62,7 @@ class StoreSettingRequest extends FormRequest
             $this->data = request()->all();
         }
 
-        $parameters = request()->route()->parameters();
-        $type = $parameters['type'] ?? null;
-
-        // check type
-        SettingType::ensureTypeExists($type);
-
-        $settingType = SettingType::type($type);
-
-        $params = [];
-
-        $this->renderFormAttribute($params, $settingType->getForm());
-
-        return $params;
+        // SettingType was removed; keep this request class available but without type-based attributes.
+        return [];
     }
 }
