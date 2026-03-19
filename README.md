@@ -1,4 +1,4 @@
-[contributors-shield]: https://img.shields.io/github/contributors/jobmetric/laravel-setting.svg?style=for-the-badge
+﻿[contributors-shield]: https://img.shields.io/github/contributors/jobmetric/laravel-setting.svg?style=for-the-badge
 [contributors-url]: https://github.com/jobmetric/laravel-setting/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/jobmetric/laravel-setting.svg?style=for-the-badge&label=Fork
 [forks-url]: https://github.com/jobmetric/laravel-setting/network/members
@@ -15,162 +15,159 @@
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-# Setting for laravel
+# Laravel Setting
 
-This is a package for a dynamic setting across different Laravel projects.
+**Build Dynamic Settings. Manage Them Safely.**
 
-## Install via composer
+Laravel Setting lets you define application settings as form-driven classes and store/retrieve them from a database-backed cache. Stop scattering config values across controllers and configs. Use a unified settings layer with validation, caching, discovery, and clear storage keys.
 
-Run the following command to pull in the latest version:
+## Why Laravel Setting?
+
+### Form-Driven Settings
+Define each setting form by extending `JobMetric\Setting\Contracts\AbstractSetting` and returning a `JobMetric\Form\FormBuilder` that describes fields.
+
+### Application-Key Storage
+Each setting form produces a stable `formName()` (`application_key`). Values are stored per field under that form.
+
+### Fast Reads with Cache
+Reads are cached under `config('setting.cache_key')` (default: `SETTING`). Cache is invalidated whenever settings are stored or forgotten.
+
+### Events and Lifecycle Control
+Optionally fire `StoreSettingEvent` and `ForgetSettingEvent` when storing or deleting settings.
+
+### Namespaced Discovery
+Register one or more namespaces in `SettingNamespaceRegistry`. `SettingRegistry` can discover and validate all `AbstractSetting` subclasses inside them.
+
+## What is a Setting Form?
+
+A setting form is a class that extends `AbstractSetting` and implements:
+- `application()`
+- `key()`
+- `title()`
+- `description()`
+- `form()` (returns `FormBuilder`)
+
+From these, `formName()` is built as `application() . '_' . key()` and used as the main storage identifier (`form` column in the `settings` table).
+
+## What Awaits You?
+
+By adopting Laravel Setting, you can:
+- Create setting form classes with `setting:make`
+- Store values safely with `Setting::dispatch()` (class-based) or `Setting::dispatchByForm()` (raw)
+- Retrieve values with `Setting::get()`, `Setting::form()` and class helpers like `Setting::getFromClass()`
+- Invalidate cache via `setting:clear`
+- Discover all setting forms through `SettingNamespaceRegistry` and `SettingRegistry`
+- Listen to store/forget events with optional dispatching control
+
+## Quick Start
+
+Install Laravel Setting via Composer:
+
 ```bash
 composer require jobmetric/laravel-setting
 ```
 
-## Documentation
+Run migrations:
 
-To use the services of this package, please follow the instructions below.
-
-### Migrate the database
-
-Run the following command to migrate the database:
 ```bash
 php artisan migrate
 ```
 
-### Usage
+Create a setting form class:
 
-#### Dispatch setting into the database
+```bash
+php artisan setting:make ConfigSetting --application=app --title="Config" --description="Application configuration"
+```
 
-The `dispatch` method will create a new setting if it does not exist, otherwise it will update the existing setting.
+Edit the generated class and implement `form()` by adding the desired fields using `FormBuilder`.
+
+## Usage
+
+### Store settings by form name (raw)
+Use `dispatchByForm()` (or the `dispatchSetting()` helper). Keys in the object must start with the `form` prefix (`{application_key}_...`).
 
 ```php
-use JobMetric\Setting\Facades\Setting as SettingFacade;
+use JobMetric\Setting\Facades\Setting;
 
-SettingFacade::dispatch('config', [
-    'config_name' => 'job metric',
-    'config_url' => 'jobmetric.net',
-    'config_address' => [
-        'city' => 'Mashhad',
-        'street' => 'Pastor',
-        'postal_code' => '1234567890',
-    ],
+Setting::dispatchByForm('app_config', [
+    'app_config_site_name' => 'My Site',
+    'app_config_site_url'  => 'https://example.com',
 ]);
 ```
 
-> The first parameter is the setting key, and the second parameter is an array of key-value pairs.
->
-> Since event is an extraneous task, it is not useful in this method, this value is optionally placed in the third parameter, so that if your program needs it, it can be set.
->
-> The data array keys must start with config_ which is the same code, otherwise the storage will not be done.
-> 
-> Key-value pairs are stored in the `settings` table on a record-by-record basis.
-> 
-> The value of the keys can be an array or string or boolean or integer or float.
-
-> When the settings are updated, the settings caches are cleared, and if each user executes a new request on the server, the system cache is rebuilt.
-
-#### Get setting
-
-The `get` method will return the value of the setting key.
+Or via helper:
 
 ```php
-use JobMetric\Setting\Facades\Setting as SettingFacade;
-
-$config_name = SettingFacade::get('config_name');
-```
-
-> The first parameter is the setting key.
-> 
-> The second parameter is the default value of the setting key. If the setting key does not exist, the default value will be returned.
-> 
-> The `get` method will return the value of the setting key.
-
-#### Get all settings
-
-The `all` method will return all settings.
-
-```php
-use JobMetric\Setting\Facades\Setting as SettingFacade;
-
-$settings = SettingFacade::all();
-```
-
-#### Forget setting
-
-The `forget` method will delete the setting code.
-
-```php
-use JobMetric\Setting\Facades\Setting as SettingFacade;
-
-SettingFacade::forget('config');
-```
-
-> The first parameter is the setting code.
-
-#### Has setting
-
-The `has` method will return true if the setting code exists, otherwise it will return false.
-
-```php
-use JobMetric\Setting\Facades\Setting as SettingFacade;
-
-$has = SettingFacade::has('config_name');
-```
-
-> The first parameter is the setting key.
-> 
-> The `has` method will return true if the setting code exists, otherwise it will return false.
-
-### Helper functions
-
-#### Dispatch setting
-
-The `setting` helper function will create a new setting if it does not exist, otherwise it will update the existing setting.
-
-```php
-dispatchSetting('config', [
-    'config_name' => 'job metric',
-    'config_url' => 'jobmetric.net',
-    'config_address' => [
-        'city' => 'Mashhad',
-        'street' => 'Pastor',
-        'postal_code' => '1234567890',
-    ],
+dispatchSetting('app_config', [
+    'app_config_site_name' => 'My Site',
 ]);
 ```
 
-#### Forget setting
-
-The `forgetSetting` helper function will delete the setting code.
-
-```php
-forgetSetting('config');
-```
-
-#### Get setting
-
-The `getSetting` helper function will return the value of the setting key.
+### Store settings by setting class (validated)
+Use `dispatch()` (or `dispatchSettingFromClass()`) for class-based dispatch with DTO validation via `FormBuilderRequest`.
 
 ```php
-$config_name = getSetting('config_name');
+use JobMetric\Setting\Facades\Setting;
+use App\Settings\ConfigSetting;
+
+Setting::dispatch(ConfigSetting::class, [
+    'site_name' => 'My Site',
+]);
 ```
 
-#### Code settings
-
-All the values set in the code form are returned.
+### Read settings
 
 ```php
-$settings = codeSettings('config');
+use JobMetric\Setting\Facades\Setting;
+
+$siteName = Setting::get('app_config_site_name');
+$form = Setting::form('app_config');
 ```
 
-#### Has setting
-
-The `hasSetting` helper function will return true if the setting code exists, otherwise it will return false.
+### Read from a setting class
 
 ```php
-$has = hasSetting('config_name');
+use JobMetric\Setting\Facades\Setting;
+use App\Settings\ConfigSetting;
+
+$siteName = Setting::getFromClass(ConfigSetting::class, 'site_name');
+$form = Setting::getFromClass(ConfigSetting::class, null);
 ```
+
+### Forget settings (delete + cache invalidation)
+
+```php
+use JobMetric\Setting\Facades\Setting;
+
+Setting::forget('app_config');
+```
+
+### Clear cache
+
+```bash
+php artisan setting:clear
+```
+
+## Documentation
+
+Ready to transform your Laravel applications? Our comprehensive documentation is your gateway to mastering Laravel Setting:
+
+**[📚 Read Full Documentation ->](https://doc.jobmetric.net/package/laravel-setting)**
+
+The documentation includes:
+- **Getting Started** - installation and migration steps
+- **Setting Forms** - `AbstractSetting`, `formName()`, and `FormBuilder`
+- **Setting Service** - storing, forgetting, cache invalidation, and retrieval APIs
+- **Registries** - `SettingNamespaceRegistry` and `SettingRegistry` discovery rules
+- **Commands** - `setting:make`, `setting:clear`
+- **Events** - `StoreSettingEvent` and `ForgetSettingEvent`
+- **Helpers** - `dispatchSetting`, `dispatchSettingFromClass`, and read/exists utilities
+- **Testing** - package tests and common verification flows
+
+## Contributing
+
+Thank you for participating in `laravel-setting`. A contribution guide can be found [here](CONTRIBUTING.md).
 
 ## License
 
-The MIT License (MIT). Please see [License File](https://github.com/jobmetric/laravel-setting/blob/master/LICENCE.md) for more information.
+The `laravel-setting` is open-sourced software licensed under the MIT license. See [License File](LICENCE.md) for more information.
